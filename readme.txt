@@ -1,5 +1,5 @@
 == Description ==
-* The objective is to generate a number of adversarial examples of the number "2" from the MNIST database
+* The objective is to generate a number of adversarial examples of the number "2" from the MNIST database to fool a MNIST classifier to appear as "6"
 * The project was started with some prior knowledge of NN such as perceptrons and MLPs
 * First time dealing with CNNs and TensorFlow
 
