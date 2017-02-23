@@ -14,4 +14,4 @@
 * Find a way to generate key pixel or data clusters that are associated with heavy weighting identifier of the number "6"
 
 # Resources
-https://www.tensorflow.org/versions/master/tutorials/layers/
+* https://www.tensorflow.org/versions/master/tutorials/layers/
