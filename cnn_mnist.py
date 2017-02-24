@@ -1,5 +1,6 @@
 from tensorflow.examples.tutorials.mnist import input_data
 import tensorflow as tf 
+import numpy as np
 
 sess = tf.InteractiveSession()
 
@@ -21,7 +22,13 @@ def conv2d(x, W):
 def pool_2x2(x):
 	return tf.nn.max_pool(x, ksize = [1, 2, 2, 1], strides = [1, 2, 2, 1], padding = 'SAME')
 
-# placeholders for input data (input data x has tensor ? x 784)
+# image generator function using random noise
+def disturb_image(x):
+    disturb = tf.truncated_normal([None, 784], stddev = 0.01)
+    return (disturb + x)
+
+
+# placeholders for input data
 x = tf.placeholder(tf.float32, shape = [None, 784])
 y_ = tf.placeholder(tf.float32, shape = [None, 10])
 
@@ -87,7 +94,22 @@ print("Model saved as: %s" % save_path)
 saver.restore(sess, "./save_1")
 print("Model restored")
 
+# Generate adversarial images
+for i in range(10000):
+    batch_xs, batch_ys = mnist.test.next_batch(1)
+    num = batch_ys[0]
+    print (num)
+    acc = accuracy.eval(feed_dict = {x: batch_xs, y_: batch_ys, keep_prob: 1.0})
+    
+    if tf.one_hot(2, 10) == num and acc == 1:
+        batch_xs[0] = disturb_image(batch_xs[0])
+        six = [[tf.one_hot(6, 10)]]
+        bingo = accuracy.eval(feed_dict = {x: batch_xs, y_: six, keep_prob: 1.0})
+        if bingo == 1:
+            print("match found")
 
-# Test step
+
+
+# Test stept
 print("test accuracy %g" % accuracy.eval(feed_dict = {x: mnist.test.images, y_: mnist.test.labels, keep_prob: 1.0}))
 
