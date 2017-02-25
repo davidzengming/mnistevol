@@ -4,11 +4,12 @@ import numpy as np
 
 sess = tf.InteractiveSession()
 
+cool_mnist = input_data.read_data_sets('MNIST_data', one_hot = False)
 mnist = input_data.read_data_sets('MNIST_data', one_hot = True)
 
 # weight initialization functions
 def weight_variable(shape):
-    initial = tf.truncated_normal(shape, stddev = 0.1)
+    initial = tf.truncated_normal(shape, stddev = 0.3)
     return tf.Variable(initial)
 
 def bias_variable(shape):
@@ -22,10 +23,10 @@ def conv2d(x, W):
 def pool_2x2(x):
 	return tf.nn.max_pool(x, ksize = [1, 2, 2, 1], strides = [1, 2, 2, 1], padding = 'SAME')
 
-# image generator function using random noise
-def disturb_image(x):
-    disturb = tf.truncated_normal([None, 784], stddev = 0.01)
-    return (disturb + x)
+# random noise generator
+def make_noise():
+    noise = tf.truncated_normal([784], stddev = 0.5)
+    return noise
 
 
 # placeholders for input data
@@ -97,18 +98,13 @@ print("Model restored")
 # Generate adversarial images
 for i in range(10000):
     batch_xs, batch_ys = mnist.test.next_batch(1)
-    num = batch_ys[0]
-    print (num)
-    acc = accuracy.eval(feed_dict = {x: batch_xs, y_: batch_ys, keep_prob: 1.0})
-    
-    if tf.one_hot(2, 10) == num and acc == 1:
-        batch_xs[0] = disturb_image(batch_xs[0])
-        six = [[tf.one_hot(6, 10)]]
-        bingo = accuracy.eval(feed_dict = {x: batch_xs, y_: six, keep_prob: 1.0})
+    noise = make_noise()
+    acc = accuracy.eval(feed_dict = {x: [batch_xs[0]], y_: [batch_ys[0]], keep_prob: 1.0})
+    if np.all(tf.one_hot(2,10).eval() == batch_ys[0]) and acc == 1:
+        #print(y_conv.eval(feed_dict = {x: [noise.eval() + batch_xs[0]], y_: [tf.one_hot(6, 10).eval()], keep_prob: 1.0}))
+        bingo = accuracy.eval(feed_dict = {x: [noise.eval() + batch_xs[0]], y_: [tf.one_hot(6, 10).eval()], keep_prob: 1.0})
         if bingo == 1:
-            print("match found")
-
-
+            print("BINGO")
 
 # Test stept
 print("test accuracy %g" % accuracy.eval(feed_dict = {x: mnist.test.images, y_: mnist.test.labels, keep_prob: 1.0}))
