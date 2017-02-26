@@ -4,7 +4,6 @@ import numpy as np
 
 sess = tf.InteractiveSession()
 
-cool_mnist = input_data.read_data_sets('MNIST_data', one_hot = False)
 mnist = input_data.read_data_sets('MNIST_data', one_hot = True)
 
 # weight initialization functions
@@ -25,8 +24,9 @@ def pool_2x2(x):
 
 # random noise generator
 def make_noise():
-    noise = tf.truncated_normal([784], stddev = 0.5)
-    return noise
+    initial = tf.constant(0.1, shape=[784])
+    noise = tf.truncated_normal([784], stddev = 0.1)
+    return noise+initial
 
 
 # placeholders for input data
@@ -67,10 +67,14 @@ b_fc2 = bias_variable([10])
 
 y_conv = tf.nn.softmax(tf.matmul(h_fc1_drop, W_fc2) + b_fc2)
 
-# Cost function and backward prop
-cross_entropy = -tf.reduce_sum(y_*tf.log(y_conv))
-train_step = tf.train.AdamOptimizer(1e-4).minimize(cross_entropy)
+# train
+#cross_entropy = -tf.reduce_sum(y_*tf.log(y_conv))
+#train_step = tf.train.AdamOptimizer(1e-4).minimize(cross_entropy)
+
+# check if y_conv == y_
 correct_prediction = tf.equal(tf.argmax(y_conv, 1), tf.argmax(y_, 1))
+
+# compute accuracy (1 or 0 when batch_size == 1)
 accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
 # Saver
