@@ -2,7 +2,6 @@ from tensorflow.examples.tutorials.mnist import input_data
 import tensorflow as tf 
 import numpy as np
 import matplotlib.pyplot as plt
-from PIL import Image
 
 sess = tf.InteractiveSession()
 
@@ -32,9 +31,7 @@ def make_noise():
 
 # generate and save img to current folder
 def gen_image(arr):
-    two_d = np.reshape(arr, (28, 28))
-    img = Image.fromarray(two_d, 'L')
-    return img
+    plt.imshow(arr.reshape((28, 28)))
 
 # placeholders for input data
 x = tf.placeholder(tf.float32, shape = [None, 784])
@@ -110,13 +107,19 @@ print("Model restored")
 for i in range(10000):
     batch_xs, batch_ys = mnist.test.next_batch(1)
     noise = make_noise()
+
     acc = accuracy.eval(feed_dict = {x: [batch_xs[0]], y_: [batch_ys[0]], keep_prob: 1.0})
     if np.all(tf.one_hot(2,10).eval() == batch_ys[0]) and acc == 1:
-        plt.imshow(batch_xs[0])
         #print(y_conv.eval(feed_dict = {x: [noise.eval() + batch_xs[0]], y_: [tf.one_hot(6, 10).eval()], keep_prob: 1.0}))
         bingo = accuracy.eval(feed_dict = {x: [noise.eval() + batch_xs[0]], y_: [tf.one_hot(6, 10).eval()], keep_prob: 1.0})
         if bingo == 1:
-          print("BINGO")
+        	gen_image(batch_xs[0])
+        	plt.savefig("original.png")
+        	gen_image(noise.eval())
+        	plt.savefig("noise.png")
+        	gen_image(batch_xs[0] + noise.eval())
+        	plt.savefig("combined.png")
+        	print("BINGO")
 
 # Test step
 print("test accuracy %g" % accuracy.eval(feed_dict = {x: mnist.test.images, y_: mnist.test.labels, keep_prob: 1.0}))
