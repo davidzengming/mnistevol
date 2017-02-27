@@ -33,40 +33,12 @@ def make_noise():
 def gen_image(arr):
     plt.imshow(arr.reshape((28, 28)))
 
-def fgsm(x, predictions, eps):
-    # Compute loss
-    y = tf.to_float(
-        tf.equal(predictions, tf.reduce_max(predictions, 1, keep_dims=True)))
-    y = y / tf.reduce_sum(y, 1, keep_dims=True)
-    loss = model_loss(y, predictions, mean=False)
-    grad, = tf.gradients(loss, x)
+def fgsm(x, cross_entropy, eps):
+    grad, = tf.gradients(cross_entropy, x)
     signed_grad = tf.sign(grad)
     scaled_signed_grad = eps * signed_grad
     adv_x = tf.stop_gradient(x + scaled_signed_grad)
     return adv_x
-
-def model_loss(y, model, mean=True):
-    """
-    Define loss of TF graph
-    :param y: correct labels
-    :param model: output of the model
-    :param mean: boolean indicating whether should return mean of loss
-                 or vector of losses for each input of the batch
-    :return: return mean of loss if True, otherwise return vector with per
-             sample loss
-    """
-
-    op = model.op
-    if "softmax" in str(op).lower():
-        logits, = op.inputs
-    else:
-        logits = model
-
-    out = tf.nn.softmax_cross_entropy_with_logits(logits=logits, labels=y)
-
-    if mean:
-        out = tf.reduce_mean(out)
-    return out
 
 # placeholders for MNIST input data
 x = tf.placeholder(tf.float32, shape = [None, 784])
@@ -133,16 +105,15 @@ print("Model restored")
 
 it = 2
 # Generate adversarial images
-for i in range(10000):
+for i in range(1):
     batch_xs, batch_ys = mnist.test.next_batch(1)
-    noise = make_noise()
-    print(tf.all_variables)
-    adv_x = fgsm(batch_xs[0], y_conv, 0.3)
-    print(adv_x)
+    #noise = make_noise()
+    adv_x = fgsm(x, y_conv, 0.1)
+    print(adv_x.eval(feed_dict = {x: [batch_xs[0]], y_: [batch_ys[0]], keep_prob: 1.0}))
     acc = accuracy.eval(feed_dict = {x: [batch_xs[0]], y_: [batch_ys[0]], keep_prob: 1.0})
     if np.all(tf.one_hot(2,10).eval() == batch_ys[0]) and acc == 1:
-        #print(y_conv.eval(feed_dict = {x: [noise.eval() + batch_xs[0]], y_: [tf.one_hot(6, 10).eval()], keep_prob: 1.0}))
-        bingo = accuracy.eval(feed_dict = {x: [noise.eval() + batch_xs[0]], y_: [tf.one_hot(6, 10).eval()], keep_prob: 1.0})
+        #print(y_conv.eval(feed_dict = {x: [batch_xs[0]], y_: [tf.one_hot(6, 10).eval()], keep_prob: 1.0}))
+        bingo = accuracy.eval(feed_dict = {x: [batch_xs[0]], y_: [tf.one_hot(6, 10).eval()], keep_prob: 1.0})
         if bingo == 1:
             gen_image(batch_xs[0])
             plt.savefig("%s_original.png" % it)
@@ -152,4 +123,3 @@ for i in range(10000):
             plt.savefig("%s_combined.png" % it)
             print("BINGO")
             it += 1
-
