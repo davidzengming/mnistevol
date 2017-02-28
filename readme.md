@@ -10,7 +10,7 @@ This library uses `TensorFlow`, `numpy`, and `matplotlib`. Matploblib is used fo
 ##  Discoveries
 * The MNIST classifier was built through following the tutorial on tensorflow website. The MNIST classifer reached accuracy of around 99.2% on the MNIST test samples.
 * Some research was done in search for a way to generate adversarial images reliably. One method proposed by Goodfellow(2014) was a method called FGSM(fast gradient sign method). The results were not that great since only a few samples of 2 were able to be misclassified. (perhaps it is more difficult for numbers)
-* A genetic algorithm was built to add random mutations and evolve using increasing probability of "6".
+* A simple genetic algorithm was built to add random mutations and evolve using increasing probability of "6".
 
 ## Resources
 * https://www.tensorflow.org/versions/master/tutorials/layers/
