@@ -1,6 +1,6 @@
 # mnistevol (v1.0)
 ## Description 
-* The objective is to generate a number of adversarial examples of the number "2" from the MNIST database to fool a MNIST classifier to appear as "6"
+* The objective is to generate a number of adversarial examples of the number "2" from the MNIST database to fool a MNIST classifier to appear as "6".
 
 ## Setting Up
 
