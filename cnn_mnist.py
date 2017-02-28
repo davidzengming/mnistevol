@@ -118,12 +118,14 @@ for i in range(10000):
     if np.all(tf.one_hot(2,10).eval() == batch_ys[0]) and acc == 1:
         while (found != True):
             res = y_conv.eval(feed_dict = {x: [disruption + batch_xs[0]], keep_prob: 1.0})
-            disruption = disrupt(batch_xs[0])
+            for k in range(1000)
+                disruption[k] = disrupt(batch_xs[0])
+
             bingo = accuracy.eval(feed_dict = {x: [disruption + batch_xs[0]], y_: [tf.one_hot(6, 10).eval()], keep_prob: 1.0})
             print ("Sample: ", i, ". Softmax res: ", res)
             if bingo == 1:
                 found = True
-                gen_image(batch_xs[0])
+                gen_image(batchtch_xs[0])
                 plt.savefig("%s_original.png" % it)
                 gen_image(disruption)
                 plt.savefig("%s_noise.png" % it)
