@@ -2,6 +2,7 @@ from tensorflow.examples.tutorials.mnist import input_data
 import tensorflow as tf 
 import numpy as np
 import matplotlib.pyplot as plt
+import random
 
 sess = tf.InteractiveSession()
 
@@ -13,7 +14,7 @@ def weight_variable(shape):
     return tf.Variable(initial)
 
 def bias_variable(shape):
-    initial = tf.constant(0.1, shape=shape)
+    initial = tf.constant(0.1, shape = shape)
     return tf.Variable(initial)
 
 # transform convolution and pool functions
@@ -24,10 +25,20 @@ def pool_2x2(x):
     return tf.nn.max_pool(x, ksize = [1, 2, 2, 1], strides = [1, 2, 2, 1], padding = 'SAME')
 
 # generates random noise
-def make_noise():
-    initial = tf.constant(0.1, shape=[784])
-    noise = tf.truncated_normal([784], stddev = 0.05)
-    return noise+initial
+def disrupt(x):
+    initial = tf.constant(0.1, shape = [784])
+    noise = initial + tf.truncated_normal([784], stddev = 0.05)
+    noise = noise.eval()
+    for j in range (784):
+        # clipping for greyscale
+        if noise[j] + x[j] < 0 or noise[j] + x[j] > 1:
+            noise[j] = 0;
+        num = random.randint(0, 9)
+        if (num == 0 and x[j] >= 0.5):
+            noise[j] = -x[j]
+        if (num == 1 and x[j] <= 0.2):
+            noise[j] = 1 - x[j]
+    return noise
 
 # transforms np.arr into 2-d color map
 def gen_image(arr):
@@ -65,8 +76,8 @@ W_fc2 = weight_variable([1024, 10])
 b_fc2 = bias_variable([10])
 y_conv = tf.nn.softmax(tf.matmul(h_fc1_drop, W_fc2) + b_fc2)
 
-# gradient descent
-cross_entropy = -tf.reduce_sum(y_*tf.log(y_conv))
+# loss function
+cross_entropy = -tf.reduce_sum(y_ * tf.log(y_conv))
 train_step = tf.train.AdamOptimizer(1e-4).minimize(cross_entropy)
 correct_prediction = tf.equal(tf.argmax(y_conv, 1), tf.argmax(y_, 1))
 accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
@@ -96,23 +107,28 @@ print("Model saved as: %s" % save_path)
 saver.restore(sess, "./save_1")
 print("Model restored")
 
+
 it = 0
 # Generate adversarial images
 for i in range(10000):
+    found = False
     batch_xs, batch_ys = mnist.test.next_batch(1)
-    noise = make_noise()
-
+    disruption = disrupt(batch_xs[0])
     acc = accuracy.eval(feed_dict = {x: [batch_xs[0]], y_: [batch_ys[0]], keep_prob: 1.0})
     if np.all(tf.one_hot(2,10).eval() == batch_ys[0]) and acc == 1:
-        #print(y_conv.eval(feed_dict = {x: [noise.eval() + batch_xs[0]], y_: [tf.one_hot(6, 10).eval()], keep_prob: 1.0}))
-        bingo = accuracy.eval(feed_dict = {x: [noise.eval() + batch_xs[0]], y_: [tf.one_hot(6, 10).eval()], keep_prob: 1.0})
-        if bingo == 1:
-            gen_image(batch_xs[0])
-            plt.savefig("%s_original.png" % it)
-            gen_image(noise.eval())
-            plt.savefig("%s_noise.png" % it)
-            gen_image(batch_xs[0] + noise.eval())
-            plt.savefig("%s_combined.png" % it)
-            print("BINGO")
-            it += 1
+        while (found != True):
+            res = y_conv.eval(feed_dict = {x: [disruption + batch_xs[0]], keep_prob: 1.0})
+            disruption = disrupt(batch_xs[0])
+            bingo = accuracy.eval(feed_dict = {x: [disruption + batch_xs[0]], y_: [tf.one_hot(6, 10).eval()], keep_prob: 1.0})
+            print ("Sample: ", i, ". Softmax res: ", res)
+            if bingo == 1:
+                found = True
+                gen_image(batch_xs[0])
+                plt.savefig("%s_original.png" % it)
+                gen_image(disruption)
+                plt.savefig("%s_noise.png" % it)
+                gen_image(disruption + batch_xs[0])
+                plt.savefig("%s_combined.png" % it)
+                print("BINGO")
+                it += 1
 
