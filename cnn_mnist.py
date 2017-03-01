@@ -24,9 +24,11 @@ def conv2d(x, W):
 def pool_2x2(x):
     return tf.nn.max_pool(x, ksize = [1, 2, 2, 1], strides = [1, 2, 2, 1], padding = 'SAME')
 
+# generate image
 def gen_image(arr):
     plt.imshow(arr.reshape((28, 28)))
 
+# evolve and mutate functions
 def evolve_mutate(gen, x):
     num_species = len(gen)
     while len(gen) < 100:
