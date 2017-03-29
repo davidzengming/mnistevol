@@ -15,13 +15,13 @@ This library uses `TensorFlow`, `numpy`, and `matplotlib`. Matploblib is used fo
 
 ## Sample Images
 
-Original image:
+### Original image
 ![1_original](https://cloud.githubusercontent.com/assets/20020087/24436653/b70a8368-140a-11e7-82b3-d59ef07f9698.png)
 
-Noise introduced:
+### Noise introduced
 ![1_noise](https://cloud.githubusercontent.com/assets/20020087/24436630/9a07125e-140a-11e7-80d7-d343cf90045b.png)
 
-Resultant image misidentified as the number "6"
+### Resultant image misidentified as the number "6"
 ![1_combined](https://cloud.githubusercontent.com/assets/20020087/24436635/9cc2c59c-140a-11e7-821b-839a4ff0d1d5.png)
 
 ## Resources
