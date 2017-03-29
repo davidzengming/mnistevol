@@ -14,6 +14,9 @@ This library uses `TensorFlow`, `numpy`, and `matplotlib`. Matploblib is used fo
 * A simple genetic algorithm was built to add random mutations and evolve through maximizing probability of "6".
 
 ## Sample Images
+![1_combined](https://cloud.githubusercontent.com/assets/20020087/24436629/992dc85a-140a-11e7-9a04-649e8b6329a4.png)
+![1_noise](https://cloud.githubusercontent.com/assets/20020087/24436630/9a07125e-140a-11e7-80d7-d343cf90045b.png)
+![1_combined](https://cloud.githubusercontent.com/assets/20020087/24436635/9cc2c59c-140a-11e7-821b-839a4ff0d1d5.png)
 
 ## Resources
 * https://www.tensorflow.org/versions/master/tutorials/layers/
